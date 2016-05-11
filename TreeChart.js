@@ -11,6 +11,8 @@ var TreeChart = function() {
     var closedColor = 'steelblue';
     var selectableStrokeColor = 'blue';
     var selectableStrokeWidth = 1;
+    var leafStrokeColor = 'black';
+    var leafStrokeWidth = 0;
     var textColor = '#000';
     var animDuration = 500;
     var radius = 4.5;
@@ -20,6 +22,8 @@ var TreeChart = function() {
     var fontSize = 11;
     var orientation = 'horizontal';
     var positions = {pos_1: 'y', pos_2: 'x', pos0_1: 'y0', pos0_2: 'x0', rotation: 0};
+    var nameIdentifier = 'name';
+    var childrenIdentifier = 'children';
     
     var chart = function(selection) {
         selection.each(function(root) {
@@ -68,19 +72,19 @@ var TreeChart = function() {
 
             // quickly toggle all children of node
             function toggleAll(node) {
-                if (node.children) {
-                    node.children.forEach(toggleAll);
+                if (node[childrenIdentifier]) {
+                    node[childrenIdentifier].forEach(toggleAll);
                     toggle(node);
                 }
             }
 
             // toggle a single node
             function toggle(node) {
-                if (node.children) {
-                    node._children = node.children;
-                    node.children = null;
+                if (node[childrenIdentifier]) {
+                    node._children = node[childrenIdentifier];
+                    node[childrenIdentifier] = null;
                 } else {
-                    node.children = node._children;
+                    node[childrenIdentifier] = node._children;
                     node._children = null;
                 }
             }
@@ -117,9 +121,9 @@ var TreeChart = function() {
                 nodeUpdate.select('circle')
                     .attr('r', radius)
                     .style('fill', function(d) {return d._children ? closedColor : expandedColor})
-                    .style('stroke', selectableStrokeColor)
-                    .style('stroke-width', function(d) {return d.children || d._children ? selectableStrokeWidth : 0})
-                    .style('cursor', function(d) {return d.children || d._children ? 'pointer' : ''});
+                    .style('stroke', function(d) {return d[childrenIdentifier] || d._children ? selectableStrokeColor : leafStrokeColor})
+                    .style('stroke-width', function(d) {return d[childrenIdentifier] || d._children ? selectableStrokeWidth : leafStrokeWidth})
+                    .style('cursor', function(d) {return d[childrenIdentifier] || d._children ? 'pointer' : ''});
 
                 // update text
                 nodeUpdate.select('text')
@@ -128,9 +132,9 @@ var TreeChart = function() {
                         'color': textColor,
                         'font-size': fontSize + 'px'
                     })
-                    .text(function(d) {return d.name;})
-                    .attr('x', function(d) {return d.children || d._children ? 0 - radius - 5 : radius + 5;})
-                    .attr('text-anchor', function(d) {return d.children || d._children ? 'end' : 'start';})
+                    .text(function(d) {return d[nameIdentifier];})
+                    .attr('x', function(d) {return d[childrenIdentifier] || d._children ? 0 - radius - 5 : radius + 5;})
+                    .attr('text-anchor', function(d) {return d[childrenIdentifier] || d._children ? 'end' : 'start';})
                     .attr('transform', 'rotate(' + positions.rotation + ')');
 
 
@@ -322,6 +326,24 @@ var TreeChart = function() {
         return this;
     };
 
+    chart.leafStrokeColor = function(value) {
+        if (!arguments.length) {
+            return leafStrokeColor;
+        }
+
+        leafStrokeColor = value;
+        return this;
+    };
+
+    chart.leafStrokeWidth = function(value) {
+        if (!arguments.length) {
+            return leafStrokeWidth;
+        }
+
+        leafStrokeWidth = value;
+        return this;
+    };
+
     chart.textColor = function(value) {
         if (!arguments.length) {
             return textColor;
@@ -399,6 +421,24 @@ var TreeChart = function() {
             orientation = 'horizontal';
         }
 
+        return this;
+    };
+
+    chart.nameIdentifier = function(value) {
+        if (!arguments.length) {
+            return nameIdentifier;
+        }
+
+        nameIdentifier = value;
+        return this;
+    };
+
+    chart.childrenIdentifier = function(value) {
+        if (!arguments.length) {
+            return childrenIdentifier;
+        }
+
+        childrenIdentifier = value;
         return this;
     };
 
