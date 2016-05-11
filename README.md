@@ -30,7 +30,6 @@ modifiable attributes:
 - linkColor
 - fontSize
 - orientation
-- positions
 - nameIdentifier
 - childrenIdentifier
 
