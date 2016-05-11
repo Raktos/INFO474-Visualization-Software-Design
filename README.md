@@ -121,7 +121,7 @@ These function modify the properties that describe how nodes will appear.
 ### TreeChart.**expandedColor**(*value*)
 `expandedColor` defines the color an expanded (or leaf) node will have.
 
-Defaults to `lightsteelblue`.
+Defaults to `'lightsteelblue'`.
 
 Returns the current `expandedColor` property of the tree if no value is given.
 
@@ -130,7 +130,7 @@ Otherwise sets the `expandedColor` to `value` and returns itself.
 ### TreeChart.**closedColor**(*value*)
 `closedColor` defines the color a closed/collapsed node will have.
 
-Defaults to `steelblue`.
+Defaults to `'steelblue'`.
 
 Returns the current `closedColor` property of the tree if no value is given.
 
@@ -139,7 +139,7 @@ Otherwise sets the `closedColor` to `value` and returns itself.
 ### TreeChart.**selectableStrokeColor**(*value*)
 `selectableStrokeColor` defines the outline color an expandable/collapsible node will have.
 
-Defaults to `blue`.
+Defaults to `'blue'`.
 
 Returns the current `selectableStrokeColor` of the tree if no value is given.
 
@@ -157,7 +157,7 @@ Otherwise sets the `selectableStrokeWidth` to `value` and returns itself.
 ### TreeChart.**leafStrokeColor**(*value*)
 `leafStrokeColor` defines the outline color a leaf node will have.
 
-Defaults to `black`.
+Defaults to `'black'`.
 
 Returns the current `leafStrokeColor` of the tree if no value is given.
 
@@ -187,7 +187,7 @@ These functions will modify the properties that define how text will appear.
 ### TreeChart.**textColor**(*value*)
 `textColor` defines the text color the tree will have.
 
-Defaults to `#000` (black).
+Defaults to `'#000'` (black).
 
 Returns the current `textColor` of the tree if no value is given.
 
@@ -226,7 +226,7 @@ Otherwise sets the `linkWidth` to `value` and returns itself.
 ### TreeChart.**linkColor**(*value*)
 `linkColor` defines the color links will have.
 
-Defaults to `#ccc`.
+Defaults to `'#ccc'`.
 
 Returns the current `linkColor` of the tree if no value is given.
 
