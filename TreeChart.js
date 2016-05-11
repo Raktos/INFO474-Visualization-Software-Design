@@ -34,9 +34,12 @@ var TreeChart = function() {
             var g = outersvg.select('g');
 
             // if we don't have a drawing area make it
-            if (outersvg.empty()|| g.empty()) {
+            if (outersvg.empty()) {
                  outersvg = d3.select(this).append('svg');
-                 g = outersvg.append('g');
+            }
+
+            if (g.empty()) {
+                g = outersvg.append('g');
             }
 
             // get outersvg
@@ -171,6 +174,11 @@ var TreeChart = function() {
                 // transition links to new positions
                 link.transition()
                     .duration(animDuration)
+                    .style({
+                        'stroke-width': linkWidth + 'px',
+                        'stroke': linkColor,
+                        'fill': 'none'
+                    })
                     .attr('d', diagonal);
 
                 // remove exiting links
@@ -204,7 +212,7 @@ var TreeChart = function() {
     ////////////////////////
     
     chart.height = function(value) {
-        if(!arguments.length){
+        if (!arguments.length) {
             return height;
         }
         
@@ -213,16 +221,76 @@ var TreeChart = function() {
     };
 
     chart.width = function(value) {
-        if(!arguments.length){
+        if (!arguments.length) {
             return width;
         }
 
         width = value;
         return this;
     };
+    
+    chart.margin = function(values) {
+        if (!arguments.length) {
+            return margin
+        }
+        
+        if (values.left) {
+            margin.left = values.left;
+        }
+        
+        if (values.right) {
+            margin.right = values.right;
+        }
+        
+        if (values.top) {
+            margin.top = values.top;
+        }
+        
+        if (values.bottom) {
+            margin.bottom = values.bottom;
+        }
+        
+        return this;
+    };
+    
+    chart.leftMargin = function(value) {
+        if (!arguments.length) {
+            return margin.left;
+        }
+        
+        margin.left = value;
+        return this;
+    };
+
+    chart.rightMargin = function(value) {
+        if (!arguments.length) {
+            return margin.right;
+        }
+
+        margin.right = value;
+        return this;
+    };
+
+    chart.topMargin = function(value) {
+        if (!arguments.length) {
+            return margin.top;
+        }
+
+        margin.top = value;
+        return this;
+    };
+
+    chart.bottomMargin = function(value) {
+        if (!arguments.length) {
+            return margin.bottom;
+        }
+
+        margin.bottom = value;
+        return this;
+    };
 
     chart.expandedColor = function(value) {
-        if(!arguments.length){
+        if (!arguments.length) {
             return expandedColor;
         }
 
@@ -231,16 +299,34 @@ var TreeChart = function() {
     };
 
     chart.closedColor = function(value) {
-        if(!arguments.length){
+        if (!arguments.length) {
             return closedColor;
         }
 
         closedColor = value;
         return this;
     };
+    
+    chart.selectableStrokeColor = function(value) {
+        if (!arguments.length) {
+            return selectableStrokeColor;
+        }
+
+        selectableStrokeColor = value;
+        return this;
+    };
+
+    chart.selectableStrokeWidth = function(value) {
+        if (!arguments.length) {
+            return selectableStrokeWidth;
+        }
+
+        selectableStrokeWidth = value;
+        return this;
+    };
 
     chart.textColor = function(value) {
-        if(!arguments.length){
+        if (!arguments.length) {
             return textColor;
         }
 
@@ -249,7 +335,7 @@ var TreeChart = function() {
     };
 
     chart.animDuration = function(value) {
-        if(!arguments.length){
+        if (!arguments.length) {
             return animDuration;
         }
 
@@ -258,7 +344,7 @@ var TreeChart = function() {
     };
 
     chart.radius = function(value) {
-        if(!arguments.length){
+        if (!arguments.length) {
             return radius;
         }
 
@@ -266,12 +352,48 @@ var TreeChart = function() {
         return this;
     };
 
+    chart.linkLength = function(value) {
+        if (!arguments.length) {
+            return linkLength;
+        }
+
+        linkLength = value;
+        return this;
+    };
+
+    chart.linkWidth = function(value) {
+        if (!arguments.length) {
+            return linkWidth;
+        }
+
+        linkWidth = value;
+        return this;
+    };
+
+    chart.linkColor = function(value) {
+        if (!arguments.length) {
+            return linkColor;
+        }
+
+        linkColor = value;
+        return this;
+    };
+
+    chart.fontSize = function(value) {
+        if (!arguments.length) {
+            return fontSize;
+        }
+
+        fontSize = value;
+        return this;
+    };
+
     chart.orientation = function(value) {
-        if(!arguments.length) {
+        if (!arguments.length) {
             return orientation;
         }
 
-        if(value == 'vertical') {
+        if (value == 'vertical') {
             positions = {pos_1: 'x', pos_2: 'y', pos0_1: 'x0', pos0_2: 'y0', rotation: 90};
             orientation = 'vertical';
 
