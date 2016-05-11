@@ -10,7 +10,7 @@ var TreeChart = function() {
     var expandedColor = 'lightsteelblue';
     var closedColor = 'steelblue';
     var selectableStrokeColor = 'blue';
-    var selectableStrokeWidth = 1.5;
+    var selectableStrokeWidth = 1;
     var textColor = '#000';
     var animDuration = 500;
     var radius = 4.5;
@@ -102,11 +102,7 @@ var TreeChart = function() {
                     .on('click', function(d) {toggle(d); chart.update(d);});
 
                 nodeEnter.append('circle')
-                    .attr('r', 1e-6)
-                    .style('fill', function(d) {return d._children ? closedColor : expandedColor})
-                    .style('stroke', selectableStrokeColor)
-                    .style('stroke-width', function(d) {return d.children || d._children ? selectableStrokeWidth : 0})
-                    .style('cursor', function(d) {return d.children || d._children ? 'pointer' : ''});
+                    .attr('r', 1e-6);
 
                 nodeEnter.append('text')
                     //.attr('d' + positions.pos_1, '.35em')
@@ -121,6 +117,7 @@ var TreeChart = function() {
                 nodeUpdate.select('circle')
                     .attr('r', radius)
                     .style('fill', function(d) {return d._children ? closedColor : expandedColor})
+                    .style('stroke', selectableStrokeColor)
                     .style('stroke-width', function(d) {return d.children || d._children ? selectableStrokeWidth : 0})
                     .style('cursor', function(d) {return d.children || d._children ? 'pointer' : ''});
 
