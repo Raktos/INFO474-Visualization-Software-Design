@@ -14,39 +14,38 @@ var TreeChart = function() {
     var textColor = '#000';
     var animDuration = 500;
     var radius = 4.5;
-    var pathLength = 180;
-    var pathWidth = 1.5;
-    var pathColor = '#ccc';
+    var linkLength = 180;
+    var linkWidth = 1.5;
+    var linkColor = '#ccc';
     var fontSize = 11;
     var orientation = 'horizontal';
     var positions = {pos_1: 'y', pos_2: 'x', pos0_1: 'y0', pos0_2: 'x0', rotation: 0};
-
-    // default to just sort by first value encountered
-    // dunno what sort of data is coming in, make no assumptions
-    var sort = function(a, b) {
-        return a;
-    };
     
     var chart = function(selection) {
         selection.each(function(root) {
+            // used in id generation if necessary
             var i = 0;
 
+            // set initial position of root
             root.x0 = (height - margin.top - margin.bottom) / 2;
             root.y0 = 0;
 
             var outersvg = d3.select(this).select('.outer-svg');
             var g = outersvg.select('g');
 
+            // if we don't have a drawing area make it
             if (outersvg.empty()|| g.empty()) {
                  outersvg = d3.select(this).append('svg');
                  g = outersvg.append('g');
             }
 
+            // get outersvg
             outersvg.attr('class', 'outer-svg')
                 .transition()
                 .duration(animDuration)
                 .attr({'width': width, 'height': height});
 
+            // get inner g
             g.attr('class', 'inner-g')
                 .transition()
                 .duration(animDuration)
@@ -88,7 +87,7 @@ var TreeChart = function() {
                 var nodes = tree.nodes(root);
 
                 // normalize distance between nodes
-                nodes.forEach(function(d) {d.y = d.depth * pathLength;});
+                nodes.forEach(function(d) {d.y = d.depth * linkLength;});
 
                 //update nodes, give them an id if they don't have one
                 var node = g.selectAll('g.node')
@@ -114,13 +113,15 @@ var TreeChart = function() {
                 var nodeUpdate = node.transition()
                     .duration(animDuration)
                     .attr('transform', function(d) {return 'translate(' + d[positions.pos_1] + ',' + d[positions.pos_2] + ')';});
-                
+
+                // update circles
                 nodeUpdate.select('circle')
                     .attr('r', radius)
                     .style('fill', function(d) {return d._children ? closedColor : expandedColor})
                     .style('stroke-width', function(d) {return d.children || d._children ? selectableStrokeWidth : 0})
                     .style('cursor', function(d) {return d.children || d._children ? 'pointer' : ''});
 
+                // update text
                 nodeUpdate.select('text')
                     .style('fill-opacity', 1)
                     .style({
@@ -133,23 +134,25 @@ var TreeChart = function() {
                     .attr('transform', 'rotate(' + positions.rotation + ')');
 
 
-                // Transition exiting nodes to the parent's new position.
+                // transition nodes to new positions
                 var nodeExit = node.exit().transition()
                     .duration(animDuration)
                     .attr('transform', function(d) { return 'translate(' + localRoot[positions.pos_1] + ',' + localRoot[positions.pos_2] + ')'; })
                     .remove();
 
                 nodeExit.select('circle')
-                    .attr('r', 1e-6);
+                    .attr('r', 1e-6)
+                    .remove();
 
                 nodeExit.select('text')
-                    .style('fill-opacity', 1e-6);
+                    .style('fill-opacity', 1e-6)
+                    .remove();
 
-                // Update the links…
+                // update links
                 var link = g.selectAll('path.link')
                     .data(tree.links(nodes), function(d) {return d.target.id;});
 
-                // Enter any new links at the parent's previous position.
+                // enter any new links at the parent's previous position
                 link.enter().insert('path')
                     .attr('class', 'link')
                     .attr('d', function(d) {
@@ -157,20 +160,20 @@ var TreeChart = function() {
                         return diagonal({source: o, target: o});
                     })
                     .style({
-                        'stroke-width': pathWidth + 'px',
-                        'stroke': pathColor,
+                        'stroke-width': linkWidth + 'px',
+                        'stroke': linkColor,
                         'fill': 'none'
                     })
                     .transition()
                     .duration(animDuration)
                     .attr('d', diagonal);
 
-                // Transition links to their new position.
+                // transition links to new positions
                 link.transition()
                     .duration(animDuration)
                     .attr('d', diagonal);
 
-                // Transition exiting nodes to the parent's new position.
+                // remove exiting links
                 link.exit().transition()
                     .duration(animDuration)
                     .attr('d', function(d) {
@@ -179,13 +182,13 @@ var TreeChart = function() {
                     })
                     .remove();
 
-                // Stash the old positions for transition
+                // stash the old positions for transition
                 nodes.forEach(function(d) {
                     d.x0 = d.x;
                     d.y0 = d.y;
                 });
 
-                // pull nodes up to the front of the svg (on top of paths)
+                // pull nodes up to the front of the svg (on top of links)
                 node.each(function() {
                     this.parentElement.appendChild(this);
                 });
@@ -260,11 +263,6 @@ var TreeChart = function() {
         }
 
         radius = value;
-        return this;
-    };
-
-    chart.sort = function(func) {
-        sort = func;
         return this;
     };
 
