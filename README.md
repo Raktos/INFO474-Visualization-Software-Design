@@ -5,12 +5,12 @@ Reusable collapsible tree chart.
 
 Heavily based on [this d3 example chart](https://mbostock.github.io/d3/talk/20111018/tree.html)
 
-Base code format from [module 10](https://github.com/INFO-474/m10-reusability/)
+Base reusability format from [module 10](https://github.com/INFO-474/m10-reusability/)
 
 # Description
 This will create a tree with collapsible nodes.
 
-Input data is based on the standard d3 tree, an example of which can be found at the end of this document.
+Input data is based on the standard d3 tree format, an example of which can be found at the end of this document.
 
 modifiable attributes:
 - height
