@@ -7,8 +7,8 @@ var TreeChart = function() {
     var height = 800;
     var width = 1200;
     var margin = {left: 100, right: 20, top: 20, bottom: 20};
-    var expandedColor = 'red';
-    var closedColor = 'green';
+    var expandedColor = 'lightsteelblue';
+    var closedColor = 'steelblue';
     var selectableStrokeColor = 'blue';
     var selectableStrokeWidth = 1.5;
     var textColor = '#000';
@@ -34,22 +34,31 @@ var TreeChart = function() {
             root.x0 = (height - margin.top - margin.bottom) / 2;
             root.y0 = 0;
 
-            var g = d3.select(this).select('.outer-svg').select('.inner-svg');
-            if (g.empty()) {
-                 g = d3.select(this)
-                    .append('svg')
-                    .attr({'width': width, 'height': height})
-                    .attr('class', 'outer-svg')
-                    .append('g')
-                    .attr('class', 'inner-svg')
-                    .attr({'width': width - margin.left - margin.bottom, 'height': height - margin.top - margin.bottom})
-                    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+            var outersvg = d3.select(this).select('.outer-svg');
+            var g = outersvg.select('g');
+
+            if (outersvg.empty()|| g.empty()) {
+                 outersvg = d3.select(this).append('svg');
+                 g = outersvg.append('g');
             }
+
+            outersvg.attr('class', 'outer-svg')
+                .transition()
+                .duration(animDuration)
+                .attr({'width': width, 'height': height});
+
+            g.attr('class', 'inner-g')
+                .transition()
+                .duration(animDuration)
+                .attr({'width': width - margin.left - margin.bottom, 'height': height - margin.top - margin.bottom})
+                .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
 
             // d3 tree object
+            var treeHeight = (orientation == 'horizontal' ? height - margin.top - margin.bottom : width - margin.left - margin.right);
+            var treeWidth = (orientation == 'vertical' ? height - margin.top - margin.bottom : width - margin.left - margin.right);
             var tree = d3.layout.tree()
-                .size([height - margin.top - margin.bottom, width - margin.left - margin.right]);
+                .size([treeHeight, treeWidth]);
 
             // diagonal projection for the connecting paths
             var diagonal = d3.svg.diagonal()
@@ -95,14 +104,10 @@ var TreeChart = function() {
                     .style('fill', function(d) {return d._children ? closedColor : expandedColor})
                     .style('stroke', selectableStrokeColor)
                     .style('stroke-width', function(d) {return d.children || d._children ? selectableStrokeWidth : 0})
-                    .style('cursor', 'pointer');
+                    .style('cursor', function(d) {return d.children || d._children ? 'pointer' : ''});
 
                 nodeEnter.append('text')
-                    .attr(positions.pos_2, function(d) {return d.children || d._children ? 0 - radius - 5 : radius + 5;})
-                    .attr('d' + positions.pos_1, '.35em')
-                    .attr('text-anchor', function(d) {return d.children || d._children ? 'end' : 'start';})
-                    .attr('transform', 'rotate(' + positions.rotation + ')')
-                    .text(function(d) {return d.name;})
+                    //.attr('d' + positions.pos_1, '.35em')
                     .style('fill-opacity', 1e-6);
                 
                 // transitions
@@ -112,7 +117,9 @@ var TreeChart = function() {
                 
                 nodeUpdate.select('circle')
                     .attr('r', radius)
-                    .style('fill', function(d) {return d._children ? closedColor : expandedColor});
+                    .style('fill', function(d) {return d._children ? closedColor : expandedColor})
+                    .style('stroke-width', function(d) {return d.children || d._children ? selectableStrokeWidth : 0})
+                    .style('cursor', function(d) {return d.children || d._children ? 'pointer' : ''});
 
                 nodeUpdate.select('text')
                     .style('fill-opacity', 1)
@@ -120,11 +127,10 @@ var TreeChart = function() {
                         'color': textColor,
                         'font-size': fontSize + 'px'
                     })
-                    .attr(positions.pos_2, function(d) {return d.children || d._children ? 0 - radius - 5 : radius + 5;})
-                    .attr('d' + positions.pos_1, '.35em')
+                    .text(function(d) {return d.name;})
+                    .attr('x', function(d) {return d.children || d._children ? 0 - radius - 5 : radius + 5;})
                     .attr('text-anchor', function(d) {return d.children || d._children ? 'end' : 'start';})
-                    .attr('transform', 'rotate(' + positions.rotation + ')')
-                    .text(function(d) {return d.name;});
+                    .attr('transform', 'rotate(' + positions.rotation + ')');
 
 
                 // Transition exiting nodes to the parent's new position.
@@ -155,7 +161,6 @@ var TreeChart = function() {
                         'stroke': pathColor,
                         'fill': 'none'
                     })
-                    .style()
                     .transition()
                     .duration(animDuration)
                     .attr('d', diagonal);
@@ -178,6 +183,11 @@ var TreeChart = function() {
                 nodes.forEach(function(d) {
                     d.x0 = d.x;
                     d.y0 = d.y;
+                });
+
+                // pull nodes up to the front of the svg (on top of paths)
+                node.each(function() {
+                    this.parentElement.appendChild(this);
                 });
             };
 
